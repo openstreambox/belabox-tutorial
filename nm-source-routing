@@ -6,9 +6,20 @@ if [[ $2 == "up" || $2 == "dhcp4-change" ]]; then
   ADDR=(${IP4_ADDRESS_0//// }) # splits the variable by '/'
   NETWORK=(${IP4_ROUTE_0}) # splits the variable by ' '
 
-  ip rule del lookup "$1" || true
-  ip route flush table "$1"
-  ip route add "$NETWORK" dev "$1" proto kernel scope link src "$ADDR" table "$1"
-  ip route add default via "$IP4_GATEWAY" dev "$1" table "$1"
-  ip rule add from "$ADDR" lookup "$1"
+  # Generate rule table number from interface name, enx1a2b3c4d5e6f -> 2023
+  RULE_TABLE=$((200 + $(echo "$1" | cksum | cut -f 1 -d ' ') % 4800))
+
+  ip rule del lookup "$RULE_TABLE" || true
+  ip route flush table "$RULE_TABLE" || true
+  ip route add "$NETWORK" dev "$1" proto kernel scope link src "$ADDR" table "$RULE_TABLE"
+  ip route add default via "$IP4_GATEWAY" dev "$1" table "$RULE_TABLE"
+  ip rule add from "$ADDR" lookup "$RULE_TABLE"
+fi
+
+if [[ $2 == "down" ]]; then
+  # Generate rule table number from interface name, enx1a2b3c4d5e6f -> 2023
+  RULE_TABLE=$((200 + $(echo "$1" | cksum | cut -f 1 -d ' ') % 4800))
+
+  ip rule del lookup "$RULE_TABLE" || true
+  ip route flush table "$RULE_TABLE" || true
 fi
