@@ -1,47 +1,30 @@
-This tutorial is now DEPRECATED
-===============================
-
-# DEPRECATED and unmaintained, don't use this tutorial
-
-# Go to [belabox.net](https://belabox.net/) for the current installation instructions
-
-
-Intro
-=====
-
-You should consider joining [the Discord](https://discord.gg/hS8TcpsCKu) if you want to use BELABOX. We have a lot of other relevant information there and you can also get help if you're running into problems.
-
-Check out [my Twitch channel](https://www.twitch.tv/rationalirl) for sample VODs streamed using BELABOX. If you're using BELABOX, please consider [sponsoring the ongoing development](https://github.com/sponsors/rationalsa).
-
-
-Setting up BELABOX on a Jetson Nano
-===================================
+# Setting up
 
 These instructions were written for L4T 32.4.4 (Based on Ubuntu 18.4 LTS) and last tested on Dec 20th, 2020. Consider this a temporary guide to setting up BELABOX while a more convenient solution is being developed.
 
-Step -1
--------
+## Step -1
+
 You'll need another Internet-connected machine to serve as the ingest for your srtla-bonded stream. This can be a low cost VPS or a Linux computer (even a low power RPi) at home. Follow the *receiver* instructions in the [srtla readme](https://github.com/BELABOX/srtla/) for setting it up.
 
-Step 1
-------
+## Step 1
+
 Set up a micro SD card with L4T following the instructions from NVIDIA [for Jetson Nano 4GB](https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit) or [for Jetson Nano 2GB](https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-2gb-devkit). Note that you can do the initial setup either using a monitor, mouse & keyboard or in headless mode using the USB serial console. For the rest of the tutorial we'll assume that the system was set up correctly and that you have SSH access to the Jetson Nano via the Ethernet network.
 
-Step 2
-------
+## Step 2
+
 Updating the system packages (this may take a while):
 
-    sudo apt-get update
-    sudo apt-get dist-upgrade
+    sudo apt update
+    sudo apt dist-upgrade
 
-Step 3
-------
+## Step 3
+
 Installing the required dependencies:
 
-    sudo apt-get install nano build-essential git tcl libssl1.0-dev nodejs npm usb-modeswitch libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+    sudo apt install nano build-essential git tcl libssl1.0-dev nodejs npm usb-modeswitch libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
     
-Step 4
-------
+## Step 4
+
 Add the google DNS servers so you have some resolvers accessible through any Internet-connected interfaces, as opposed to the servers accessible through a single mobile operator that you may be getting from DHCP:
 
     printf "\nnameserver 8.8.8.8\nnameserver 8.8.4.4\n" | sudo tee -a /etc/resolvconf/resolv.conf.d/head
@@ -63,15 +46,15 @@ If you have a WiFi adapter fitted, you can connect to a WiFi network with `sudo 
 
 We use the `/etc/network/interfaces` configuration because it seems more reliable than Networkmanager at always bringing up all the interfaces. It also brings up all the modems even when they use the same MAC address (which is the case for several Huawei models), unlike NetworkManager.
 
-Step 5
-------
+## Step 5
+
 Disable the virtual Ethernet interface as it will cause naming conflicts if you use modems that get enumerated as `usbX` devices.
 
     sudo systemctl disable nv-l4t-usb-device-mode.service
     sudo reboot
 
-Step 6
-------
+## Step 6
+
 Installing (the BELABOX fork of) SRT:
 
     cd
@@ -82,8 +65,8 @@ Installing (the BELABOX fork of) SRT:
     sudo make install
     sudo ldconfig
 
-Step 7
-------
+## Step 7
+
 Building belacoder:
 
     cd
@@ -91,8 +74,8 @@ Building belacoder:
     cd belacoder
     make
     
-Step 8
-------
+## Step 8
+
 Building srtla:
 
     cd
@@ -100,8 +83,8 @@ Building srtla:
     cd srtla
     make
 
-Step 9
-------
+## Step 9
+
 Setting up belaUI:
 
     cd
@@ -126,37 +109,3 @@ See the [belacoder readme](https://github.com/BELABOX/belacoder) for information
 After setting up and confirming that everything is working correctly, you can install belaUI as a system service that starts automatically at boot by running:
 
     sudo ./install_service.sh
-
-
-Next steps
-----------
-
-For practical use, you should configure belaUI to be automatically started at boot and use a phone to control it.
-
-If you become a recurring [github sponsor](https://github.com/sponsors/rationalsa), you'll get a BELABOX cloud remote account allowing you to manage your encoder from any Internet-connected device via [cloud.belabox.net](https://cloud.belabox.net/). Otherwise you'll need a direct LAN connection to your encoder to access belaUI. Depending on your modem setup, you could make belaUI accessible either through a modem that has both USB (for the Jetson) and WiFI (for the phone) interfaces, or by enabling the hotspot feature on the phone and connecting the Jetson to it as per step 4, or by setting up a Wifi access point on the Jetson Nano - outside the scope of this tutorial.
-
-
-Receiving the stream
---------------------
-
-Regardless of how many connections are available, BELABOX always streams via [srtla](https://github.com/BELABOX/srtla). To receive this stream, you have several options, including:
-
-1) Become a [github sponsor](https://github.com/sponsors/rationalsa), support the BELABOX project and receive access to our hosted srtla/SRT relay service with servers in the US and France.
-2) Follow the [srtla readme](https://github.com/BELABOX/srtla) to set up a basic relay using srt-live-transmit or another SRT server configured with the equivalent options.
-3) Use a **third party** docker image configured to receive srtla, such as [this one](https://hub.docker.com/r/sherazarde/belabox-receiver). Note that we can make no guarantees about third party packages being maintained to support future revisions of the srtla software.
-
-
-Ending notes
-------------
-
-If you're not confident following any of the instructions, please wait until we're able to distribute BELABOX in a more convenient format.
-
-Once you're set up, check out [the bitrate guide](https://github.com/BELABOX/tutorial/blob/main/bitrate_guide.md).
-
-
-This tutorial is now DEPRECATED
-===============================
-
-# DEPRECATED and unmaintained, don't use this tutorial
-
-# Go to [belabox.net](https://belabox.net/) for the current installation instructions
