@@ -7,7 +7,7 @@ if [[ $2 == "up" || $2 == "dhcp4-change" ]]; then
   NETWORK=(${IP4_ROUTE_0}) # splits the variable by ' '
 
   # Generate rule table number from interface name, enx1a2b3c4d5e6f -> 2023
-  RULE_TABLE=$((200 + $(echo "$1" | cksum | cut -f 1 -d ' ') % 4800))
+  RULE_TABLE=$((300 + $(echo "$1" | cksum | cut -f 1 -d ' ') % 4800))
 
   ip rule del lookup "$RULE_TABLE" || true
   ip route flush table "$RULE_TABLE" || true
@@ -18,7 +18,7 @@ fi
 
 if [[ $2 == "down" ]]; then
   # Generate rule table number from interface name, enx1a2b3c4d5e6f -> 2023
-  RULE_TABLE=$((200 + $(echo "$1" | cksum | cut -f 1 -d ' ') % 4800))
+  RULE_TABLE=$((300 + $(echo "$1" | cksum | cut -f 1 -d ' ') % 4800))
 
   ip rule del lookup "$RULE_TABLE" || true
   ip route flush table "$RULE_TABLE" || true
