@@ -22,4 +22,5 @@ if [[ $2 == "down" ]]; then
 
   ip rule del lookup "$RULE_TABLE" || true
   ip route flush table "$RULE_TABLE" || true
+  ip route flush cache
 fi
