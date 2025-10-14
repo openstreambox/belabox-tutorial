@@ -10,10 +10,10 @@ if [[ $2 == "up" || $2 == "dhcp4-change" ]]; then
   RULE_TABLE=$((300 + $(echo "$1" | cksum | cut -f 1 -d ' ') % 4800))
 
   ip rule del lookup "$RULE_TABLE" || true
-  ip route flush table "$RULE_TABLE" || true
-  ip route add "$NETWORK" dev "$1" proto kernel scope link src "$ADDR" table "$RULE_TABLE"
-  ip route add default via "$IP4_GATEWAY" dev "$1" table "$RULE_TABLE"
+  ip route replace "$NETWORK" dev "$1" proto kernel scope link src "$ADDR" table "$RULE_TABLE"
+  ip route replace default via "$IP4_GATEWAY" dev "$1" table "$RULE_TABLE"
   ip rule add from "$ADDR" lookup "$RULE_TABLE"
+  ip route flush cache
 fi
 
 if [[ $2 == "down" ]]; then
